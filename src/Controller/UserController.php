@@ -2,8 +2,10 @@
 
 namespace App\Controller;
 
+use App\Entity\User;
 use App\Repository\UserRepository;
 use App\Service\GenerateToken;
+use Doctrine\Persistence\ObjectManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -39,5 +41,27 @@ class UserController extends AbstractController
         return new JsonResponse([
             'token' => $token,
         ]);
+    }
+
+    #[Route('/api/register', name: 'app_register', methods: ['POST'])]
+    public function register(Request $request, ObjectManager $objectManager): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+
+        if (!isFieldValid($data, 'email') || !isFieldValid($data, 'password') || !isFieldValid($data, 'username')) {
+            return new JsonResponse(['errorMessage' => 'Email, Username, and Password required'], 400);
+        }
+
+        $user = new User();
+        $hashedPassword = $this->hasher->hashPassword($user, $data['password']);
+        $user->setUsername($data["username"])
+            ->setEmail($data['email'])
+            ->setPassword($hashedPassword)
+            ->setRoles(["ROLE_USER"]);
+
+        $objectManager->persist($user);
+        $objectManager->flush();
+
+        return new JsonResponse(['message' => 'Account created successfully'], 201);
     }
 }
