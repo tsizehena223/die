@@ -3,6 +3,8 @@
 namespace App\Security;
 
 use App\Entity\User;
+use App\Repository\UserRepository;
+use App\Service\DecodeJwt;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -19,6 +21,10 @@ use Symfony\Component\Security\Http\Authenticator\Passport\SelfValidatingPasspor
  */
 class UserAuthenticator extends AbstractAuthenticator
 {
+    public function __construct(private DecodeJwt $decodeJwt, private UserRepository $userRepository)
+    {
+    }
+
     /**
      * Called on every request to decide if this authenticator should be
      * used for the request. Returning `false` will cause this authenticator
@@ -26,25 +32,31 @@ class UserAuthenticator extends AbstractAuthenticator
      */
     public function supports(Request $request): ?bool
     {
-        return $request->headers->has('X-AUTH-TOKEN');
+        return $request->headers->has('X-Authorization');
     }
 
     public function authenticate(Request $request): Passport
     {
-        $apiToken = $request->headers->get('X-AUTH-TOKEN');
+        $apiToken = $request->headers->get('X-Authorization');
         if (null === $apiToken) {
-        // The token header was empty, authentication fails with HTTP Status
-        // Code 401 "Unauthorized"
-        throw new CustomUserMessageAuthenticationException('No API token provided');
+            throw new CustomUserMessageAuthenticationException('No API token provided');
         }
 
-        // implement your own logic to get the user identifier from `$apiToken`
-        // e.g. by looking up a user in the database using its API key
-        // $userIdentifier = /** ... */;
-        $user = new User();
+        $userId = $this->decodeJwt->getIdToken($apiToken);
+        if ($userId == null) {
+            throw new CustomUserMessageAuthenticationException('API token not valid');
+        }
+
+        $user = $this->userRepository->find($userId);
+        if (!$user) {
+            throw new CustomUserMessageAuthenticationException('User not authenticated');
+        }
+
         $userIdentifier = $user->getEmail();
 
-        return new SelfValidatingPassport(new UserBadge($userIdentifier));
+        return new SelfValidatingPassport(new UserBadge($userIdentifier, function ($userIdentifier) {
+            return $this->userRepository->findOneBy(['email' => $userIdentifier]);
+        }));
     }
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response

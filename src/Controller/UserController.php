@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Repository\UserRepository;
+use App\Security\UserAuthenticator;
 use App\Service\GenerateToken;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -63,5 +64,42 @@ class UserController extends AbstractController
         $objectManager->flush();
 
         return new JsonResponse(['message' => 'Account created successfully'], 201);
+    }
+
+    #[Route('api/profile/update', name: 'app_profile_update', methods: ['POST'])]
+    public function update(Request $request, UserAuthenticator $userAuthenticator, ObjectManager $objectManager, UserRepository $userRepository): JsonResponse
+    {
+        if (!$userAuthenticator->supports($request)) {
+            return new JsonResponse(['errorMessage' => 'User not authenticated'], 401);
+        }
+
+        $badge = $userAuthenticator->authenticate($request);
+        $userEmail = $badge->getUser()->getUserIdentifier();
+        if (!$userEmail) {
+            return new JsonResponse(['errorMessage' => 'User not authenticated'], 401);
+        }
+
+        $user = $userRepository->findOneBy(["email" => $userEmail]);
+        if (!$user) {
+            return new JsonResponse(['errorMessage' => 'User not authenticated'], 401);
+        }
+
+        $data = json_decode($request->getContent(), true);
+
+        if (!isFieldValid($data, 'newEmail') || !isFieldValid($data, 'newUsername')) {
+            return new JsonResponse(['errorMessage' => 'Email and Username are required'], 400);
+        }
+
+        $user->setEmail($data['newEmail']);
+        $user->setUsername($data['newUsername']);
+        $objectManager->persist($user);
+        $objectManager->flush();
+
+        $userUpdated = [
+            'email' => $user->getEmail(),
+            'username' => $user->getUsername()
+        ];
+
+        return new JsonResponse($userUpdated);
     }
 }
