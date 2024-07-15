@@ -6,12 +6,14 @@ use App\Entity\User;
 use App\Repository\UserRepository;
 use App\Security\UserAuthenticator;
 use App\Service\GenerateToken;
+use App\Service\ValidateField as ServiceValidateField;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
+use ValidateField;
 
 class UserController extends AbstractController
 {
@@ -20,11 +22,11 @@ class UserController extends AbstractController
     }
 
     #[Route('/api/login', name: 'app_login', methods: ['POST'])]
-    public function login(Request $request, UserRepository $userRepository, GenerateToken $generateToken): JsonResponse
+    public function login(Request $request, UserRepository $userRepository, GenerateToken $generateToken, ServiceValidateField $validateField): JsonResponse
     {
         $data = json_decode($request->getContent(), true);
 
-        if (!isFieldValid($data, 'email') || !isFieldValid($data, 'password')) {
+        if (!$validateField->isFieldValid($data, 'email') || !$validateField->isFieldValid($data, 'password')) {
             return new JsonResponse(['errorMessage' => 'Email and Password required'], 400);
         }
 
@@ -45,11 +47,11 @@ class UserController extends AbstractController
     }
 
     #[Route('/api/register', name: 'app_register', methods: ['POST'])]
-    public function register(Request $request, ObjectManager $objectManager): JsonResponse
+    public function register(Request $request, ObjectManager $objectManager, ServiceValidateField $validateField): JsonResponse
     {
         $data = json_decode($request->getContent(), true);
 
-        if (!isFieldValid($data, 'email') || !isFieldValid($data, 'password') || !isFieldValid($data, 'username')) {
+        if (!$validateField->isFieldValid($data, 'email') || !$validateField->isFieldValid($data, 'password') || !$validateField->isFieldValid($data, 'username')) {
             return new JsonResponse(['errorMessage' => 'Email, Username, and Password required'], 400);
         }
 
@@ -67,7 +69,13 @@ class UserController extends AbstractController
     }
 
     #[Route('api/profile/update', name: 'app_profile_update', methods: ['POST'])]
-    public function update(Request $request, UserAuthenticator $userAuthenticator, ObjectManager $objectManager, UserRepository $userRepository): JsonResponse
+    public function update(
+        Request $request,
+        UserAuthenticator $userAuthenticator,
+        ObjectManager $objectManager,
+        UserRepository $userRepository,
+        ServiceValidateField $validateField
+    ): JsonResponse
     {
         if (!$userAuthenticator->supports($request)) {
             return new JsonResponse(['errorMessage' => 'User not authenticated'], 401);
@@ -86,7 +94,7 @@ class UserController extends AbstractController
 
         $data = json_decode($request->getContent(), true);
 
-        if (!isFieldValid($data, 'newEmail') || !isFieldValid($data, 'newUsername')) {
+        if (!$validateField->isFieldValid($data, 'newEmail') || !$validateField->isFieldValid($data, 'newUsername')) {
             return new JsonResponse(['errorMessage' => 'Email and Username are required'], 400);
         }
 
