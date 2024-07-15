@@ -1,0 +1,27 @@
+import { useNavigate } from "react-router-dom";
+import logo from "../assets/logo.svg";
+
+const Home = () => {
+    const navigate = useNavigate();
+
+    const handleNavigate = () => {
+        navigate('/login');
+    }
+
+    return (
+        <div className="bg-gray-50 dark:bg-gray-900 h-screen w-screen">
+            <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto lg:py-0 h-screen">
+                <img src={logo} alt="" className="rounded-full size-24 animate-bounce" />
+                <div className="flex flex-col justify-center items-center mt-4">
+                    <p className="text-center text-sky-400 text-3xl mb-3">Project Management System</p>
+                    <p className="text-center text-gray-400"><span className="text-red-400">d</span>o <span className="text-red-400">i</span>t <span className="text-red-400">e</span>fficiently &nbsp;...&nbsp; make it easier</p>
+                    <button onClick={handleNavigate} className="text-white mt-8 border border-gray-700 px-5 py-2 rounded-full bg-gray-800 hover:bg-gray-900">
+                        Let's go
+                    </button>
+                </div>
+            </div>
+        </div>
+    )
+}
+
+export default Home;
