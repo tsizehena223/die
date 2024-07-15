@@ -99,5 +99,3 @@ A Task Management System helps users to plan, organize, and manage tasks and pro
 8. **Testing and Deployment:**
    - Write unit and functional tests to ensure code quality.
    - Set up CI/CD pipelines for automated testing and deployment.
-
-By following these steps and incorporating these features, you can develop a robust and efficient Task Management System using Symfony.
