@@ -3,9 +3,10 @@ import logo from "../assets/logo.svg";
 
 const Home = () => {
     const navigate = useNavigate();
+    const hasToken = localStorage.getItem('dieToken') ? true : false;
 
     const handleNavigate = () => {
-        navigate('/login');
+        navigate(hasToken ? '/dashboard' : '/login');
     }
 
     return (

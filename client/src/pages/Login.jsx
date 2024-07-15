@@ -2,6 +2,7 @@ import { useState } from "react";
 import logo from "../assets/logo.svg";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { baseUrlApi } from "../config/api";
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -13,31 +14,23 @@ const Login = () => {
     e.preventDefault();
 
     try {
-      const response = await fetch('http://127.0.0.1:8000/api/login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        email,
-        password
-      }),
-    });
+      const response = await fetch(baseUrlApi + '/login', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({email,password}),
+      });
 
-    if (!response.ok) {
       const data = await response.json();
-      if (data.errorMessage) {
-        setError(data.errorMessage);
-        toast.error(error, {autoClose: 2000,});
+      if (!response.ok) {
+        setError(data.errorMessage ?? 'An error has occured');
+        toast.error(error);
+      } else {
+        if (data.token) {
+          localStorage.setItem("dieToken", data.token);
+          navigate("/dashboard");
+          toast.success('Connected successfully');
+        } 
       }
-    } else {
-      const data = await response.json();
-      if (data.token) {
-        localStorage.setItem("dieToken", data.token);
-        navigate("/dashboard");
-      } 
-      toast.success('Connected successfully', {autoClose: 2000,})
-    }
     } catch (error) {
       toast.error('An error has occured', {autoClose: 2000});
     }
