@@ -5,10 +5,10 @@ const Dashboard = () => {
   const user = localStorage.getItem('userData');
 
   return (
-      <div className="bg-gray-900">
+      <>
         <Navbar user={user} />
         <Projects />
-      </div>
+      </>
   )
 }
 
