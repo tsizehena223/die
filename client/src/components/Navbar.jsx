@@ -55,9 +55,9 @@ const Navbar = (props) => {
           </div>
           <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
             <div className="flex relative ml-3">
-              <div className="flex bg-gray-200 pr-1 pl-4 py-2 rounded-full hover:cursor-pointer">
-                <p className="text-gray-900 mr-2 font-medium">{ username }</p>
-                <button className="fa fa-circle-user fa-2xl text-gray-900"></button>
+              <div className="flex border border-gray-200 pr-1 pl-4 py-2 rounded-full hover:cursor-pointer">
+                <p className="text-gray-200 mr-2 font-medium">{ username }</p>
+                <button className="fa fa-circle-user fa-2xl text-gray-200"></button>
               </div>
               <button onClick={handleLogOut} className="fa fa-sign-out fa-xl text-red-500 ml-3"></button>
             </div>
