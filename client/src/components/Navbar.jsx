@@ -3,13 +3,15 @@ import logo from "../assets/logo.svg";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
-const Navbar = () => {
+const Navbar = (props) => {
   const [activeItem, setActiveItem] = useState(0);
   const [isMenuActive, SetIsMenuActive] = useState(false);
   const navigate = useNavigate();
+  const username = JSON.parse(props.user).username ?? 'User';
 
   const handleLogOut = () => {
     localStorage.removeItem('dieToken');
+    localStorage.removeItem('userData');
     navigate('/');
     toast.success('Logged out successfully');
   }
@@ -19,11 +21,6 @@ const Navbar = () => {
 
     menu.toggleAttribute('hidden');
     SetIsMenuActive(prev => !prev);
-  }
-
-  const toggleShowProfile = () => {
-    const menu = document.getElementById("profile");
-    menu.toggleAttribute('hidden');
   }
 
   const menuItems = ['Projects', 'Tasks', 'Team'];
@@ -37,7 +34,7 @@ const Navbar = () => {
             <p className="ml-4 text-gray-200 text-2xl">die</p>
           </button>
           <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
-            <div className="flex items-center hidden sm:block">
+            <div className="items-center hidden sm:flex">
               <img className="size-12 rounded-full" src={logo} alt=""/>
             </div>
             <div className="hidden sm:ml-8 sm:flex items-center">
@@ -57,15 +54,12 @@ const Navbar = () => {
             </div>
           </div>
           <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-            <div className="relative ml-3">
-              <div onClick={toggleShowProfile} className="flex bg-cyan-400 pr-1 pl-4 py-2 rounded-full hover:cursor-pointer">
-                <p className="text-gray-900 mr-2 font-medium">Tsizehena</p>
+            <div className="flex relative ml-3">
+              <div className="flex bg-cyan-400 pr-1 pl-4 py-2 rounded-full hover:cursor-pointer">
+                <p className="text-gray-900 mr-2 font-medium">{ username }</p>
                 <button className="fa fa-circle-user fa-2xl text-gray-900"></button>
               </div>
-              <div id="profile" className="absolute right-0 z-10 mt-2 w-32 origin-top-right rounded-md bg-white py-1 shadow-lg">
-                <a href="/" className="block px-4 py-2 text-sm text-gray-700">Your Profile</a>
-                <button onClick={handleLogOut} className="block px-4 pb-2 text-sm text-gray-700 text-red-500">Log out</button>
-              </div>
+              <button onClick={handleLogOut} className="fa fa-sign-out fa-xl text-red-500 ml-3"></button>
             </div>
           </div>
         </div>

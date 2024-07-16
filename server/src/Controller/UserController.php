@@ -40,9 +40,13 @@ class UserController extends AbstractController
             return new JsonResponse(["errorMessage" => "Incorrect password"], 401);
         }
 
-        $token = $generateToken->generateToken($user->getId(), 'http://127.0.0.1:8000', 'http://127.0.0.1:3000/login');
+        $token = $generateToken->generateToken($user->getId());
         return new JsonResponse([
             'token' => $token,
+            'userData'=> [
+                'id' => $user->getId(),
+                'username' => $user->getUsername(),
+            ]
         ]);
     }
 

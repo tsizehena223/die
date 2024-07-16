@@ -16,8 +16,9 @@ const Home = () => {
                 <div className="flex flex-col justify-center items-center mt-4">
                     <p className="text-center text-sky-400 text-3xl mb-3">Project Management System</p>
                     <p className="text-center text-gray-400">do it efficiently &nbsp;...&nbsp; make it easier</p>
-                    <button onClick={handleNavigate} className="text-white mt-8 border border-gray-700 px-12 py-2 rounded-full bg-gray-800 hover:bg-gray-900">
+                    <button onClick={handleNavigate} className="text-white mt-8 border px-12 py-2 rounded-full bg-gray-700 hover:bg-gray-900">
                         Let's go
+                        <i className="fa fa-circle-arrow-right fa-lg ml-4 text-gray-300"></i>
                     </button>
                 </div>
             </div>

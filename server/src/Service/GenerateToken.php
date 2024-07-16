@@ -8,7 +8,7 @@ use Lcobucci\JWT\Signer\Key\InMemory;
 
 class GenerateToken
 {
-    function generateToken($userId, $server, $client)
+    function generateToken($userId)
         {
             $key = 'hiG8DlOKvtih6AxlZn5XKImZ06yu8I3mkOzaJrEuW8yAv8Jnkw330uMt8AEqQ5LB';
 
@@ -19,8 +19,8 @@ class GenerateToken
 
             $issuedAt = new \DateTimeImmutable("now", new \DateTimeZone("Indian/Antananarivo"));
             $builder = $configuration->builder()
-                ->issuedBy($server)
-                ->permittedFor($client)
+                ->issuedBy('http://localhost:8000')
+                ->permittedFor('http://localhost:3000')
                 ->expiresAt($issuedAt->modify('+1 hour'))
                 ->withClaim('id', $userId);
 
