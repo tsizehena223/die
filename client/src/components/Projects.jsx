@@ -1,11 +1,42 @@
+import { toast } from "react-toastify";
+import { baseUrlApi, dieToken } from "../config/api";
+import { useEffect, useState } from "react";
+
 const Projects = () => {
-  const projects = ['Project 1', 'Project 2', 'Project 3', 'Project 4', 'Project 5', 'Project 6'];
   const colors = ["bg-red-500", "bg-green-500", "bg-blue-500", "bg-yellow-500", "bg-purple-500"];
+  const [projects, setProjects] = useState([]);
+  const token = dieToken;
+
+  console.log(projects);
 
   const getRandomColor = () => {
       const randomIndex = Math.floor(Math.random() * colors.length);
       return colors[randomIndex];
   };
+
+  useEffect(() => {
+    const getProjects = async () => {
+      try {
+        const response = await fetch(baseUrlApi + '/project/all', {
+          method: 'GET',
+          headers: {'X-Authorization': `Bearer ${token}`, 'Content-Type': 'application/json'},
+        })
+
+        const data = await response.json();
+        if (!response.ok) {
+          if (data.message) {
+            toast.error(data.message);
+          }
+        } else {
+          console.log(data);
+          setProjects(data);
+        }
+      } catch (error) {
+        toast.error('An error has occured');
+      }
+    };
+    getProjects();
+  }, [token]);
 
   return (
     <div className="w-full h-auto pb-4 pt-28 sm:pt-20">

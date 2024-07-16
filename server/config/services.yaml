@@ -8,6 +8,7 @@ parameters:
 services:
     # default configuration for services in *this* file
     Doctrine\Persistence\ObjectManager: "@doctrine.orm.default_entity_manager"
+    Symfony\Component\Serializer\SerializerInterface: '@serializer'
     _defaults:
         autowire: true      # Automatically injects dependencies in your services.
         autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
