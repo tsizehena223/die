@@ -26,7 +26,7 @@ const Navbar = (props) => {
   const menuItems = ['Projects', 'Tasks', 'Team'];
 
   return (
-    <nav className="bg-gray-800">
+    <nav className="fixed bg-gray-800 top-0 w-screen z-50">
       <div className="mx-auto px-2 sm:px-6 lg:px-8">
         <div className="relative flex h-16 items-center justify-between">
           <button onClick={toggleShowMenu} className="absolute ml-2 flex items-center sm:hidden">
@@ -55,7 +55,7 @@ const Navbar = (props) => {
           </div>
           <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
             <div className="flex relative ml-3">
-              <div className="flex bg-cyan-400 pr-1 pl-4 py-2 rounded-full hover:cursor-pointer">
+              <div className="flex bg-gray-200 pr-1 pl-4 py-2 rounded-full hover:cursor-pointer">
                 <p className="text-gray-900 mr-2 font-medium">{ username }</p>
                 <button className="fa fa-circle-user fa-2xl text-gray-900"></button>
               </div>
