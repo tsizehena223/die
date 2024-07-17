@@ -3,11 +3,16 @@ import { baseUrlApi, dieToken } from "../config/api";
 import { useEffect, useState } from "react";
 
 const Projects = () => {
-  const colors = ["bg-red-500", "bg-green-500", "bg-cyan-500"];
+  const colors = ["bg-green-500", "bg-blue-500", "bg-red-500"];
   const [projects, setProjects] = useState([]);
   const token = dieToken;
 
-  console.log(projects);
+  const description = (p) => {
+    if (p.length >= 150) {
+      return p.substring(0, 150) + " ..."; 
+    }
+    return p; // Show full string
+  };
 
   useEffect(() => {
     const getProjects = async () => {
@@ -23,7 +28,6 @@ const Projects = () => {
             toast.error(data.message);
           }
         } else {
-          console.log(data);
           setProjects(data);
         }
       } catch (error) {
@@ -35,22 +39,32 @@ const Projects = () => {
 
   return (
     <div className="w-full h-auto pb-4 pt-28 sm:pt-20">
-      <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-3 sm:m-10 m-0">
-        {projects.map((item, index) => {
-          return (
-            <div key={index} className="h-80 flex flex-col rounded-xl bg-gray-800 p-6 mx-10 sm:mx-0 text-center shadow-xl">
-              <div className={`mx-auto flex h-16 w-16 -translate-y-12 transform items-center justify-center rounded-full ${item.status === 'done' ? colors[2] : (item.status === 'doing' ? colors[1] : colors[0])} shadow-lg shadow-teal-500/40`}>
-                <i className={`fas fa-laptop-file fa-xl text-gray-100`}></i>
+      {projects.length === 0 ? (
+        <div className="text-white text-center">
+          No project yet
+        </div>
+      ) : (
+        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-3 sm:m-10 m-0">
+          {projects.map((item, index) => {
+            return (
+              <div key={index} className="h-auto flex flex-col rounded-xl bg-gray-800 p-6 mx-10 sm:mx-0 text-center shadow-xl">
+                <div className={`mx-auto flex h-16 w-16 -translate-y-12 transform items-center justify-center rounded-full ${item.status === 'done' ? colors[0] : (item.status === 'doing' ? colors[1] : colors[2])} shadow-lg shadow-teal-500/40`}>
+                  <i className={`fas fa-laptop-file fa-xl text-gray-100`}></i>
+                </div>
+                <p className={`-top-10 relative text-sm ${(item.status === 'done') ? 'text-green-500' : (item.status === 'doing') ? 'text-blue-500' : 'text-red-500'}`}>
+                  ({item.status})
+                </p>
+                <h1 className="-mt-4 text-white text-xl font-medium lg:px-4">{item.title}</h1>
+                <p className="text-sm text-gray-300 font-medium">Deadline : {item.deadline}</p>
+                <p className="text-gray-400 my-6">{description(item.description)}</p>
+                <button type="button" className="mx-auto w-48 mt-auto mb-4 text-cyan-400 hover:text-black border border-cyan-400 hover:bg-cyan-400 focus:ring-4 focus:outline-none focus:ring-cyan-400 font-medium rounded-lg text-sm py-2.5">
+                  View details
+                </button>
               </div>
-              <h1 className="text-white mb-3 text-xl font-medium lg:px-4">{item.title}</h1>
-              <p className="text-gray-400">{item.description}</p>
-              <button type="button" className="mx-auto w-48 mt-auto text-cyan-400 hover:text-black border border-cyan-400 hover:bg-cyan-400 focus:ring-4 focus:outline-none focus:ring-cyan-400 font-medium rounded-lg text-sm py-2.5">
-                View details
-              </button>
-            </div>
-          )
-        })}
-      </div>
+            )
+          })}
+        </div>
+      )}
     </div>
   )
 }
