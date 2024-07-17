@@ -38,13 +38,13 @@ const Projects = () => {
       <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-3 sm:m-10 m-0">
         {projects.map((item, index) => {
           return (
-            <div key={index} className="h-80 rounded-xl bg-gray-800 p-6 mx-10 sm:mx-0 text-center shadow-xl">
+            <div key={index} className="h-80 flex flex-col rounded-xl bg-gray-800 p-6 mx-10 sm:mx-0 text-center shadow-xl">
               <div className={`mx-auto flex h-16 w-16 -translate-y-12 transform items-center justify-center rounded-full ${item.status === 'done' ? colors[2] : (item.status === 'doing' ? colors[1] : colors[0])} shadow-lg shadow-teal-500/40`}>
                 <i className={`fas fa-laptop-file fa-xl text-gray-100`}></i>
               </div>
               <h1 className="text-white mb-3 text-xl font-medium lg:px-4">{item.title}</h1>
               <p className="text-gray-400">{item.description}</p>
-              <button type="button" className="text-cyan-400 hover:text-black border border-cyan-400 hover:bg-cyan-400 focus:ring-4 focus:outline-none focus:ring-cyan-400 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">
+              <button type="button" className="mx-auto w-48 mt-auto text-cyan-400 hover:text-black border border-cyan-400 hover:bg-cyan-400 focus:ring-4 focus:outline-none focus:ring-cyan-400 font-medium rounded-lg text-sm py-2.5">
                 View details
               </button>
             </div>
