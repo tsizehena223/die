@@ -3,8 +3,10 @@
 namespace App\Controller;
 
 use App\Entity\Project;
+use App\Entity\User;
 use App\Repository\ProjectRepository;
 use App\Repository\UserRepository;
+use App\Service\DecodeJwt;
 use App\Service\ValidateField as ServiceValidateField;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -16,12 +18,33 @@ use Symfony\Component\Routing\Attribute\Route;
 class ProjectController extends AbstractController
 {
     #[Route('/api/project/all', name: 'app_project_all', methods: ['GET'])]
-    public function getAllProject(ProjectRepository $projectRepository): JsonResponse
+    public function getAllProject(
+        ProjectRepository $projectRepository,
+        Request $request,
+        DecodeJwt $decodeJwt,
+        UserRepository $userRepository
+    ): JsonResponse
     {
-        $projects = $projectRepository->findAll();
+        $token = $request->headers->get('X-Authorization');
+        $userId = $decodeJwt->getIdToken($token);
+        if (!$userId) {
+            return new JsonResponse(['errorMessage' => 'User not connected'], 401);
+        }
+        $user = $userRepository->find($userId);
+        if(!$user) {
+            return new JsonResponse(['errorMessage' => 'User not connected'], 401);
+        }
+
+        $projects = $projectRepository->findBy(['owner' => $user]);
+
         $data = [];
         foreach ($projects as $project) {
-            $data[] = $project->getTitle();
+            $data[] = [
+                'title' => $project->getTitle(),
+                'description' => $project->getDescription(),
+                'status' => $project->getStatus(),
+                'deadline' => $project->getDeadline()->format('Y-m-d'),
+            ];
         }
         return new JsonResponse($data, 200);
     }
