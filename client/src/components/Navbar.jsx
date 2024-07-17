@@ -7,7 +7,8 @@ const Navbar = (props) => {
   const [activeItem, setActiveItem] = useState(0);
   const [isMenuActive, SetIsMenuActive] = useState(false);
   const navigate = useNavigate();
-  const username = JSON.parse(props.user).username ?? 'User';
+  const user = JSON.parse(props.user);
+  const username = user ? user.username : 'User';
 
   const handleLogOut = () => {
     localStorage.removeItem('dieToken');
