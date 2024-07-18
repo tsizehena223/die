@@ -3,12 +3,14 @@ import logo from "../assets/logo.svg";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { baseUrlApi } from "../config/api";
+import { useAuth } from "../context/AuthContext";
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState();
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -26,6 +28,7 @@ const Login = () => {
         toast.error(error);
       } else {
         if (data.token && data.userData) {
+          login(data.token);
           localStorage.setItem("dieToken", data.token);
           localStorage.setItem("userData", JSON.stringify(data.userData));
           navigate("/dashboard");

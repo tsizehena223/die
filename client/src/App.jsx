@@ -6,10 +6,11 @@ import SignUp from "./pages/SignUp";
 import Dashboard from "./pages/Dashboard";
 import { ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
+import { AuthProvider } from "./context/AuthContext";
 
 function App() {
     return (
-        <div>
+        <AuthProvider>
             <ToastContainer autoClose={1000} />
             <Routes>
                 <Route path="/" element={<Home />} />
@@ -18,7 +19,7 @@ function App() {
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="*" element={<NotFound />} />
             </Routes>
-        </div>
+        </AuthProvider>
     )
 }
 

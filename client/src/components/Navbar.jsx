@@ -2,6 +2,7 @@ import { useState } from "react";
 import logo from "../assets/logo.svg";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { useAuth } from "../context/AuthContext";
 
 const Navbar = (props) => {
   const [activeItem, setActiveItem] = useState(0);
@@ -9,10 +10,12 @@ const Navbar = (props) => {
   const navigate = useNavigate();
   const user = JSON.parse(props.user);
   const username = user ? user.username : 'User';
+  const { logout } = useAuth();
 
   const handleLogOut = () => {
     localStorage.removeItem('dieToken');
     localStorage.removeItem('userData');
+    logout();
     navigate('/');
     toast.success('Logged out successfully');
   }
@@ -25,6 +28,13 @@ const Navbar = (props) => {
   }
 
   const menuItems = ['Projects', 'Tasks', 'Team'];
+
+  const displayName = (p) => {
+    if (p.length >= 10) {
+      return p.substring(0, 10); 
+    }
+    return p;
+  };
 
   return (
     <nav className="fixed bg-gray-800 top-0 w-screen z-50">
@@ -57,10 +67,10 @@ const Navbar = (props) => {
           <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
             <div className="flex relative ml-3">
               <div className="flex border border-gray-200 pr-1 pl-4 py-2 rounded-full hover:cursor-pointer">
-                <p className="text-gray-200 mr-2 font-medium">{ username }</p>
+                <p className="text-gray-200 mr-2 font-medium">{ displayName(username) }</p>
                 <button className="fa fa-circle-user fa-2xl text-gray-200"></button>
               </div>
-              <button onClick={handleLogOut} className="fa fa-sign-out fa-xl text-red-500 ml-3"></button>
+              <button onClick={handleLogOut} className="fa fa-sign-out fa-lg text-red-500 ml-3"></button>
             </div>
           </div>
         </div>
