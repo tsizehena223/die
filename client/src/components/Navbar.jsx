@@ -4,12 +4,11 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useAuth } from "../context/AuthContext";
 
-const Navbar = (props) => {
-  const [activeItem, setActiveItem] = useState(0);
-  const [isMenuActive, SetIsMenuActive] = useState(false);
+const Navbar = ({user, activePage, setActivePage}) => {
+  const [isMenuActive, setIsMenuActive] = useState(false);
   const navigate = useNavigate();
-  const user = JSON.parse(props.user);
-  const username = user ? user.username : 'User';
+  const currentUser = JSON.parse(user);
+  const username = user ? currentUser.username : 'User';
   const { logout } = useAuth();
 
   const handleLogOut = () => {
@@ -24,7 +23,7 @@ const Navbar = (props) => {
     const menu = document.getElementById("mobile-menu");
 
     menu.toggleAttribute('hidden');
-    SetIsMenuActive(prev => !prev);
+    setIsMenuActive(prev => !prev);
   }
 
   const menuItems = ['Projects', 'Team', 'New +'];
@@ -54,8 +53,8 @@ const Navbar = (props) => {
                   return (
                     <li
                       key={index}
-                      className={`rounded-full py-2 px-3 hover:bg-gray-700 hover:cursor-pointer ${activeItem === index ? 'bg-gray-900' : ''}`}
-                      onClick={() => setActiveItem(index)}
+                      className={`rounded-full py-2 px-3 hover:bg-gray-700 hover:cursor-pointer ${activePage === index ? 'bg-gray-900' : ''}`}
+                      onClick={() => setActivePage(index)}
                     >
                       {item}
                     </li>
@@ -66,25 +65,25 @@ const Navbar = (props) => {
           </div>
           <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
             <div className="flex relative ml-3">
-              <div className="flex bg-gray-900 pr-1 pl-4 py-2 rounded-full hover:cursor-pointer">
+              <button onClick={handleLogOut} className="fa fa-sign-out fa-lg text-red-500 mr-3"></button>
+              <div className="flex bg-gray-900 pr-1 pl-4 py-1.5 rounded-full hover:cursor-pointer">
                 <p className="text-gray-200 mr-2 font-medium">{ displayName(username) }</p>
-                <button className="fa fa-circle-user fa-2xl text-gray-200"></button>
+                <button className="fa fa-circle-user fa-xl text-gray-200"></button>
               </div>
-              <button onClick={handleLogOut} className="fa fa-sign-out fa-lg text-red-500 ml-3"></button>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="sm:hidden" id="mobile-menu">
+      <div className={`${isMenuActive ? 'block' : 'hidden'}`} id="mobile-menu">
         <ul className="space-y-2 px-4 pb-3 pt-2 text-sm font-medium text-gray-200">
           {menuItems.map((item, index) => {
             return (
               <li
                 key={index}
-                className={`rounded-md py-2 px-3 hover:bg-gray-700 hover:cursor-pointer ${activeItem === index ? 'bg-gray-900' : ''}`}
+                className={`rounded-md py-2 px-3 hover:bg-gray-700 hover:cursor-pointer ${activePage === index ? 'bg-gray-900' : ''}`}
                 onClick={() => {
-                  setActiveItem(index);
+                  setActivePage(index);
                   toggleShowMenu();
                 }}
               >

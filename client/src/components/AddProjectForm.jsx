@@ -21,7 +21,7 @@ const AddProjectForm = () => {
         <p className="ml-2 text-center">Add new project</p>
       </button>
       {isModalVisible && (
-        <div className="absolute w-96 flex items-center justify-center bg-gray-900 bg-opacity-50 backdrop-blur-sm z-50">
+        <div className="absolute mt-16 w-96 flex items-center justify-center bg-gray-900 bg-opacity-50 backdrop-blur-sm z-50">
           <div className="bg-white rounded-lg shadow dark:bg-gray-700">
             <div className="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white">

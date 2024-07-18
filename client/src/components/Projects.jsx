@@ -4,8 +4,9 @@ import { useEffect, useState } from "react";
 import notask from "../assets/notask.svg";
 import { useAuth } from '../context/AuthContext';
 import AddProjectForm from "./AddProjectForm";
+import Team from "./Team";
 
-const Projects = () => {
+const Projects = ({ activePage }) => {
   const colors = ["bg-green-500", "bg-blue-500", "bg-red-500"];
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -52,7 +53,9 @@ const Projects = () => {
           <i className="fa fa-spinner animate-spin fa-2xl mb-4"></i>
           <p className="text-sm mt-2">Wait just a sec...</p>
         </div>
-      ) : projects.length === 0 ? (
+      ) : (activePage === 1) ? (
+        <Team />
+      ) : (projects.length === 0 || activePage === 2) ? (
         <div className="h-screen flex flex-col justify-center items-center text-white absolute left-1/2 transform -translate-x-1/2">
           <img src={notask} alt="" className="h-40 mb-4" />
           <AddProjectForm />
@@ -63,10 +66,10 @@ const Projects = () => {
             {projects.map((item, index) => {
               return (
                 <div key={index} className="h-auto flex flex-col rounded-xl bg-gray-800 p-6 mx-10 sm:mx-0 text-center shadow-xl">
-                  <div className={`mx-auto flex h-16 w-16 -translate-y-12 transform items-center justify-center rounded-full ${item.status === 'done' ? colors[0] : (item.status === 'doing' ? colors[1] : colors[2])} shadow-lg shadow-teal-500/40`}>
+                  <div className={`mx-auto flex h-16 w-16 -translate-y-12 transform items-center justify-center rounded-full ${item.status === 'done' ? colors[0] : (item.status === 'in progress' ? colors[1] : colors[2])} shadow-lg shadow-teal-500/40`}>
                     <i className={`fas fa-laptop-file fa-xl text-gray-100`}></i>
                   </div>
-                  <p className={`-top-10 relative text-sm ${(item.status === 'done') ? 'text-green-500' : (item.status === 'doing') ? 'text-blue-500' : 'text-red-500'}`}>
+                  <p className={`-top-10 relative text-sm ${(item.status === 'done') ? 'text-green-500' : (item.status === 'in progress') ? 'text-blue-500' : 'text-red-500'}`}>
                     ({item.status})
                   </p>
                   <h1 className="-mt-4 text-white text-xl font-medium lg:px-4">{item.title}</h1>
