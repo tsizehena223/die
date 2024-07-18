@@ -27,7 +27,7 @@ const Navbar = (props) => {
     SetIsMenuActive(prev => !prev);
   }
 
-  const menuItems = ['Projects', 'Tasks', 'Team'];
+  const menuItems = ['Projects', 'Team', 'New +'];
 
   const displayName = (p) => {
     if (p.length >= 10) {
@@ -54,7 +54,7 @@ const Navbar = (props) => {
                   return (
                     <li
                       key={index}
-                      className={`rounded-md py-2 px-3 hover:bg-gray-700 hover:cursor-pointer ${activeItem === index ? 'bg-gray-900' : ''}`}
+                      className={`rounded-full py-2 px-3 hover:bg-gray-700 hover:cursor-pointer ${activeItem === index ? 'bg-gray-900' : ''}`}
                       onClick={() => setActiveItem(index)}
                     >
                       {item}
@@ -66,7 +66,7 @@ const Navbar = (props) => {
           </div>
           <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
             <div className="flex relative ml-3">
-              <div className="flex border border-gray-200 pr-1 pl-4 py-2 rounded-full hover:cursor-pointer">
+              <div className="flex bg-gray-900 pr-1 pl-4 py-2 rounded-full hover:cursor-pointer">
                 <p className="text-gray-200 mr-2 font-medium">{ displayName(username) }</p>
                 <button className="fa fa-circle-user fa-2xl text-gray-200"></button>
               </div>
