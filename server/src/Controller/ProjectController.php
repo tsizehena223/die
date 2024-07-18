@@ -52,30 +52,38 @@ class ProjectController extends AbstractController
     #[Route('/api/project/add', name: 'app_project_add', methods: ['POST'])]
     public function addProject(
         Request $request,
-        Security $security,
         ObjectManager $objectManager,
         ServiceValidateField $validateField,
-        UserRepository $userRepository
+        UserRepository $userRepository,
+        DecodeJwt $decodeJwt,
     ): JsonResponse
     {
-        if (!$security->getUser()) {
-            return new JsonResponse(['errorMessage' => 'User not authenticated'], 401);
+        $token = $request->headers->get('X-Authorization');
+        $userId = $decodeJwt->getIdToken($token);
+        if (!$userId) {
+            return new JsonResponse(['errorMessage' => 'User not connected'], 401);
         }
-        $user = $security->getUser();
+        $user = $userRepository->find($userId);
+        if(!$user) {
+            return new JsonResponse(['errorMessage' => 'User not connected'], 401);
+        }
 
         $data = json_decode($request->getContent(), true);
         if (
             !$validateField->isFieldValid($data, 'title') || 
             !$validateField->isFieldValid($data, 'description') || 
-            !$validateField->isFieldValid($data, 'status')
+            !$validateField->isFieldValid($data, 'status') ||
+            !$validateField->isFieldValid($data, 'deadline')
         ) {
-            return new JsonResponse(['errorMessage' => 'title, description, status are required'], 400);
+            return new JsonResponse(['errorMessage' => 'title, description, deadline and status are required'], 400);
         }
+
+        $deadline = new \DateTime(($data['deadline']));
 
         $project = new Project();
         $project->setTitle($data['title'])
             ->setDescription($data['description'])
-            ->setDeadline(new \DateTime("now", new \DateTimeZone("Indian/Antananarivo")))
+            ->setDeadline($deadline)
             ->setStatus($data['status'])
             ->setOwner($user);
 
