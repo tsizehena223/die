@@ -51,12 +51,16 @@ class UserController extends AbstractController
     }
 
     #[Route('/api/register', name: 'app_register', methods: ['POST'])]
-    public function register(Request $request, ObjectManager $objectManager, ServiceValidateField $validateField): JsonResponse
+    public function register(Request $request, UserRepository $userRepository, ObjectManager $objectManager, ServiceValidateField $validateField): JsonResponse
     {
         $data = json_decode($request->getContent(), true);
 
         if (!$validateField->isFieldValid($data, 'email') || !$validateField->isFieldValid($data, 'password') || !$validateField->isFieldValid($data, 'username')) {
             return new JsonResponse(['errorMessage' => 'Email, Username, and Password required'], 400);
+        }
+
+        if ($userRepository->findOneByEmail($data['email'])) {
+            return new JsonResponse(['errorMessage' => 'Email already taken'], 400);
         }
 
         $user = new User();
