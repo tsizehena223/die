@@ -3,14 +3,13 @@
 namespace App\Controller;
 
 use App\Entity\Project;
-use App\Entity\User;
 use App\Repository\ProjectRepository;
 use App\Repository\UserRepository;
 use App\Service\DecodeJwt;
+use App\Service\ProjectFormater;
 use App\Service\ValidateField as ServiceValidateField;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
@@ -22,7 +21,8 @@ class ProjectController extends AbstractController
         ProjectRepository $projectRepository,
         Request $request,
         DecodeJwt $decodeJwt,
-        UserRepository $userRepository
+        UserRepository $userRepository,
+        ProjectFormater $projectFormater
     ): JsonResponse
     {
         $token = $request->headers->get('X-Authorization');
@@ -37,16 +37,41 @@ class ProjectController extends AbstractController
 
         $projects = $projectRepository->findBy(['owner' => $user]);
 
-        $data = [];
-        foreach ($projects as $project) {
-            $data[] = [
-                'title' => $project->getTitle(),
-                'description' => $project->getDescription(),
-                'status' => $project->getStatus(),
-                'deadline' => $project->getDeadline()->format('Y-m-d'),
-            ];
-        }
+        $data = $projectFormater->formatAll($projects);
         return new JsonResponse($data, 200);
+    }
+
+    #[Route('api/project/{id}', name: 'app_project_one', methods: ['GET'])]
+    public function getOneProject(
+        Request $request,
+        ProjectRepository $projectRepository,
+        UserRepository $userRepository,
+        ProjectFormater $projectFormater,
+        DecodeJwt $decodeJwt,
+        $id
+    ): JsonResponse
+    {
+        if (!(int)$id) {
+            return new JsonResponse(['errorMessage' => 'Id not valid'], 400);
+        }
+
+        $token = $request->headers->get('X-Authorization');
+        $userId = $decodeJwt->getIdToken($token);
+        if (!$userId) {
+            return new JsonResponse(['errorMessage' => 'User not connected'], 401);
+        }
+        $user = $userRepository->find($userId);
+        if(!$user) {
+            return new JsonResponse(['errorMessage' => 'User not connected'], 401);
+        }
+
+        $project = $projectRepository->findOneBy(['id' => (int)$id, 'owner' => $user]);
+        if (!$project) {
+            return new JsonResponse();
+        }
+
+        $data = $projectFormater->formatOne($project);
+        return new JsonResponse($data);
     }
 
     #[Route('/api/project/add', name: 'app_project_add', methods: ['POST'])]
