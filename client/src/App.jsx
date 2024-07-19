@@ -4,6 +4,7 @@ import Home from "./pages/Home";
 import NotFound from "./pages/NotFound";
 import SignUp from "./pages/SignUp";
 import Dashboard from "./pages/Dashboard";
+import Project from "./pages/Project";
 import { ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import { AuthProvider } from "./context/AuthContext";
@@ -16,6 +17,7 @@ function App() {
                 <Route path="/" element={<Home />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/signup" element={<SignUp />} />
+                <Route path="/project/:id" element={<Project />} />
                 <Route path="/project" element={<Dashboard />} />
                 <Route path="*" element={<NotFound />} />
             </Routes>
