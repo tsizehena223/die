@@ -48,7 +48,7 @@ const Projects = ({ activePage, activeFilter }) => {
     getProjects();
   }, [token]);
 
-  const projectsToDisplay = (activeFilter || activeFilter == 0) ? projects.filter(item => item.status === arrayStatus[activeFilter]) : projects;
+  const projectsToDisplay = (activeFilter || activeFilter === 0) ? projects.filter(item => item.status === arrayStatus[activeFilter]) : projects;
 
   return (
     <>
@@ -67,7 +67,11 @@ const Projects = ({ activePage, activeFilter }) => {
       ) : (
         <div className="absolute md:left-44 w-auto h-auto pb-4 pt-28 sm:pt-20">
           <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-3 sm:m-10 m-0">
-            {projectsToDisplay.map((item, index) => {
+            {projectsToDisplay.length === 0 ? (
+              <div className="fixed top-1/2 left-1/2 text-white">
+                Nothing in [{arrayStatus[activeFilter]}]
+              </div>
+            ) : projectsToDisplay.map((item, index) => {
               return (
                 <div key={index} className="h-auto flex flex-col rounded-xl bg-gray-800 p-6 mx-10 sm:mx-0 text-center shadow-xl">
                   <div className={`mx-auto flex h-16 w-16 -translate-y-12 transform items-center justify-center rounded-full ${item.status === 'done' ? colors[0] : (item.status === 'in progress' ? colors[1] : colors[2])} shadow-lg shadow-teal-500/40`}>
