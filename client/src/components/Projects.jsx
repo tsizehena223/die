@@ -6,7 +6,7 @@ import { useAuth } from '../context/AuthContext';
 import AddProjectForm from "./AddProjectForm";
 import Team from "./Team";
 
-const Projects = ({ activePage }) => {
+const Projects = ({ activePage, activeFilter }) => {
   const colors = ["bg-green-500", "bg-blue-500", "bg-red-500"];
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -18,6 +18,8 @@ const Projects = ({ activePage }) => {
     }
     return p;
   };
+
+  const arrayStatus = ['done', 'in progress', 'todo'];
 
   useEffect(() => {
     const getProjects = async () => {
@@ -46,6 +48,8 @@ const Projects = ({ activePage }) => {
     getProjects();
   }, [token]);
 
+  const projectsToDisplay = (activeFilter || activeFilter == 0) ? projects.filter(item => item.status === arrayStatus[activeFilter]) : projects;
+
   return (
     <>
       {loading ? (
@@ -61,9 +65,9 @@ const Projects = ({ activePage }) => {
           <AddProjectForm />
         </div>
       ) : (
-        <div className="w-full h-auto pb-4 pt-28 sm:pt-20">
+        <div className="absolute md:left-44 w-auto h-auto pb-4 pt-28 sm:pt-20">
           <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-3 sm:m-10 m-0">
-            {projects.map((item, index) => {
+            {projectsToDisplay.map((item, index) => {
               return (
                 <div key={index} className="h-auto flex flex-col rounded-xl bg-gray-800 p-6 mx-10 sm:mx-0 text-center shadow-xl">
                   <div className={`mx-auto flex h-16 w-16 -translate-y-12 transform items-center justify-center rounded-full ${item.status === 'done' ? colors[0] : (item.status === 'in progress' ? colors[1] : colors[2])} shadow-lg shadow-teal-500/40`}>
