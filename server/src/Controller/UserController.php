@@ -7,6 +7,7 @@ use App\Repository\UserRepository;
 use App\Security\UserAuthenticator;
 use App\Service\GenerateToken;
 use App\Service\ValidateField as ServiceValidateField;
+use App\Service\VerifyAuthentication;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -120,8 +121,13 @@ class UserController extends AbstractController
     }
 
     #[Route('/api/users/all', name: 'app_users', methods: ['GET'])]
-    public function getUsers(UserRepository $userRepository): JsonResponse
+    public function getUsers(UserRepository $userRepository, Request $request, VerifyAuthentication $verifyAuthentication): JsonResponse
     {
+        $currentUser = $verifyAuthentication->verify($request);
+        if (!$currentUser instanceof User) {
+            return new JsonResponse(['errorMessage' => 'User not connected'], 401);
+        }
+
         $users = $userRepository->findAll();
 
         if (!$users) {
@@ -130,6 +136,7 @@ class UserController extends AbstractController
 
         $data = [];
         foreach ($users as $user) {
+            if ($user === $currentUser) continue;
             $data[] = [
                 "id" => $user->getId(),
                 "email" => $user->getEmail(),

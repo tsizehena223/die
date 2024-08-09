@@ -57,7 +57,7 @@ class ProjectController extends AbstractController
             !$validateField->isFieldValid($data, 'status') ||
             !$validateField->isFieldValid($data, 'deadline')
         ) {
-            return new JsonResponse(['errorMessage' => 'title, description, deadline and status are required'], 400);
+            return new JsonResponse(['errorMessage' => 'title, description, participants deadline and status are required'], 400);
         }
 
         $deadline = new \DateTime(($data['deadline']));
@@ -69,10 +69,11 @@ class ProjectController extends AbstractController
             ->setStatus($data['status'])
             ->setOwner($user);
 
-        $participants = $userRepository->findAll();
-        foreach ($participants as $participant) {
-            if ($participant == $user) continue;
-            $project->addParticipant($participant);
+        $participants = $data['participants'];
+        foreach ($participants as $participantId) {
+            $user = $userRepository->find((int)$participantId);
+            if (!$user instanceof User) continue;
+            $project->addParticipant($user);
         }
 
         $objectManager->persist($project);

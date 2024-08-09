@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { baseUrlApi } from '../config/api';
 import { useAuth } from '../context/AuthContext';
@@ -11,9 +11,11 @@ const AddProjectForm = () => {
   const [status, setStatus] = useState('');
   const [deadline, setDeadline] = useState('');
   const [description, setDescription] = useState('');
+  const [participants, setParticipants] = useState([]);
   const [loading, setLoading] = useState(false);
   const { token } = useAuth();
   const navigate = useNavigate();
+  const [users, setUsers] = useState([]);
 
   const handleButtonClick = () => {
     setIsModalVisible(true);
@@ -23,6 +25,36 @@ const AddProjectForm = () => {
     setIsModalVisible(false);
   };
 
+  const handleChangeParticipants = (e) => {
+    const selectedOptions = Array.from(e.target.selectedOptions, option => option.value);
+    setParticipants(selectedOptions);
+  };
+
+  useEffect(() => {
+    const getUsers = async () => {
+      setLoading(true);
+      if (!token) return;
+      try {
+        const response = await fetch(baseUrlApi + "/users/all", {
+          method: 'GET',
+          headers: {"Content-Type": 'application/json', 'X-Authorization': `Bearer ${token}`},
+        });
+        const data = await response.json();
+        if (!response.ok) {
+          setError(data.errorMessage ?? 'An error has occured');
+          toast.error(error);
+        } else {
+          setUsers(data);
+        }
+      } catch (error) {
+        toast.error('An error has occured');
+      } finally {
+        setLoading(false);
+      }
+    }
+    getUsers();
+  }, [error, token])
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -31,7 +63,7 @@ const AddProjectForm = () => {
       const response = await fetch(baseUrlApi + "/project/add", {
         method: 'POST',
         headers: {"Content-Type": 'application/json', 'X-Authorization': `Bearer ${token}`},
-        body: JSON.stringify({title, status, deadline, description})
+        body: JSON.stringify({title, status, deadline, description, participants})
       });
       const data = await response.json();
       if (!response.ok) {
@@ -93,15 +125,25 @@ const AddProjectForm = () => {
                   <div className="col-span-2 sm:col-span-1">
                     <label htmlFor="status" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Status</label>
                     <select id="status" value={status} onChange={(e) => setStatus(e.target.value)} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" required >
-                      <option value="">Select ...</option>
+                      <option value="" disabled>Select ...</option>
                       <option value="todo">To do</option>
                       <option value="in progress">In progress</option>
                       <option value="done">Done</option>
                     </select>
                   </div>
                   <div className="col-span-2">
+                    <label htmlFor="participants" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Participants</label>
+                    <select id="participants" style={{ height: '4rem'}} value={participants} onChange={handleChangeParticipants} multiple className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" required>
+                      {users.map((user) => (
+                        <option key={user.id} value={user.id}>
+                          {user.email}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="col-span-2">
                     <label htmlFor="description" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Product Description</label>
-                    <textarea id="description" value={description} onChange={(e) => setDescription(e.target.value)} rows="4" className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Description of the project" required ></textarea>                    
+                    <textarea id="description" value={description} onChange={(e) => setDescription(e.target.value)} rows="2" className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Description of the project" required ></textarea>                    
                   </div>
                 </div>
                 <button type='submit' className="border border-gray-500 rounded-md py-2 px-4 bg-gray-800">
