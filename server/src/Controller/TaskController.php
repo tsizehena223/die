@@ -19,20 +19,20 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class TaskController extends AbstractController
 {
-    #[Route('/api/tasks/', name: 'get_tasks_of_project', methods: ['GET'])]
+    #[Route('/api/{projectId}/tasks/', name: 'get_tasks_of_project', methods: ['GET'], requirements: ['projectId' => '\d+'])]
     public function getTasksFromProject(
         Request $request,
         ProjectRepository $projectRepository,
         VerifyAuthentication $verifyAuthentication,
         TaskRepository $taskRepository,
-        DieFormater $taskFormater
+        DieFormater $taskFormater,
+        $projectId
     ): JsonResponse
     {
         if (!$verifyAuthentication->verify($request) instanceof User) {
             return new JsonResponse(['errorMessage' => 'User not connected'], 401);
         }
 
-        $projectId = $request->query->get('projectId');
         if (!(int)$projectId) {
             return new JsonResponse(['errorMessage' => 'Project Id invalid'], 400);
         }
