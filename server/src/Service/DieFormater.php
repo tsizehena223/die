@@ -20,7 +20,7 @@ class DieFormater
     return $data;
   }
 
-  public function formatAllProjects($projects): Array
+  public function formatProjects($projects): Array
   {
     $data = [];
     foreach ($projects as $project) {

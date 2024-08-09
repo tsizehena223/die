@@ -6,7 +6,9 @@ use App\Entity\Project;
 use App\Entity\Task;
 use App\Entity\User;
 use App\Repository\ProjectRepository;
+use App\Repository\TaskRepository;
 use App\Repository\UserRepository;
+use App\Service\DieFormater;
 use App\Service\ValidateField;
 use App\Service\VerifyAuthentication;
 use Doctrine\Persistence\ObjectManager;
@@ -22,23 +24,33 @@ class TaskController extends AbstractController
         Request $request,
         ProjectRepository $projectRepository,
         VerifyAuthentication $verifyAuthentication,
+        TaskRepository $taskRepository,
+        DieFormater $taskFormater
     ): JsonResponse
     {
         if (!$verifyAuthentication->verify($request) instanceof User) {
-            return new JsonResponse('User not connected', 401);
+            return new JsonResponse(['errorMessage' => 'User not connected'], 401);
         }
 
-        $projectId = $request->query->get('project');
+        $projectId = $request->query->get('projectId');
         if (!(int)$projectId) {
-            return new JsonResponse('Project not found', 400);
+            return new JsonResponse(['errorMessage' => 'Project Id invalid'], 400);
         }
 
         $project = $projectRepository->find((int)$projectId);
         if (!$project) {
-            return new JsonResponse('Project not found', 400);
+            return new JsonResponse(['errorMessage' => 'Project not found'], 404);
         }
 
-        return new JsonResponse($project);
+        $tasks = $taskRepository->findBy(['project' => $project]);
+
+        if (!$tasks) {
+            return new JsonResponse('No task for this project');
+        }
+
+        $data = $taskFormater->formatTasks($tasks);
+
+        return new JsonResponse($data);
     }
 
     #[Route('/api/task/add', name: 'add_task', methods: ['POST'])]
@@ -53,7 +65,7 @@ class TaskController extends AbstractController
     {
         $user = $verifyAuthentication->verify($request);
         if (!$user || !$user instanceof User) {
-            return new JsonResponse('User not connected', 401);
+            return new JsonResponse(['errorMessage' => 'User not connected'], 401);
         }
 
         $data = json_decode($request->getContent(), true);
@@ -69,11 +81,11 @@ class TaskController extends AbstractController
         $deadline = new \DateTime(($data['deadline']));
         $assignedTo = $userRepository->find($data['assignedTo']);
         if (!$assignedTo instanceof User) {
-            return new JsonResponse('The user to assign the task isn\'t an user', 400);
+            return new JsonResponse(['errorMessage' => 'Invalid user to assign'], 400);
         }
         $formProject = $projectRepository->find($data['project']);
         if (!$formProject instanceof Project) {
-            return new JsonResponse('The project isn\'t a project', 400);
+            return new JsonResponse(['errorMessage' => 'Invalid project'], 400);
         }
 
         $task = new Task();

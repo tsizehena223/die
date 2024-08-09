@@ -32,7 +32,7 @@ class ProjectController extends AbstractController
 
         $projects = $projectRepository->findBy(['owner' => $user]);
 
-        $data = $projectFormater->formatAllProjects($projects);
+        $data = $projectFormater->formatProjects($projects);
         return new JsonResponse($data, 200);
     }
 
@@ -51,7 +51,7 @@ class ProjectController extends AbstractController
 
         $user = $verifyAuthentication->verify($request);
         if (!$user instanceof User) {
-            return new JsonResponse("User not connected", 401);
+            return new JsonResponse(['errorMessage' => 'User not connected'], 401);
         }
 
         $project = $projectRepository->findOneBy(['id' => (int)$id, 'owner' => $user]);
