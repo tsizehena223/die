@@ -76,7 +76,7 @@ class UserController extends AbstractController
         return new JsonResponse(['message' => 'Account created successfully'], 201);
     }
 
-    #[Route('api/profile/update', name: 'app_profile_update', methods: ['POST'])]
+    #[Route('/api/profile/update', name: 'app_profile_update', methods: ['POST'])]
     public function update(
         Request $request,
         UserAuthenticator $userAuthenticator,
@@ -117,5 +117,26 @@ class UserController extends AbstractController
         ];
 
         return new JsonResponse($userUpdated);
+    }
+
+    #[Route('/api/users/all', name: 'app_users', methods: ['GET'])]
+    public function getUsers(UserRepository $userRepository): JsonResponse
+    {
+        $users = $userRepository->findAll();
+
+        if (!$users) {
+            return new JsonResponse(['errorMessage' => 'No user found']);
+        }
+
+        $data = [];
+        foreach ($users as $user) {
+            $data[] = [
+                "id" => $user->getId(),
+                "email" => $user->getEmail(),
+                "username" => $user->getUserName()
+            ];
+        }
+
+        return new JsonResponse($data);
     }
 }
