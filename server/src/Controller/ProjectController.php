@@ -36,33 +36,6 @@ class ProjectController extends AbstractController
         return new JsonResponse($data, 200);
     }
 
-    // #[Route('api/project/{id}', name: 'app_project_one', methods: ['GET'], requirements: ['id' => '\d+'])]
-    // public function getOneProject(
-    //     Request $request,
-    //     ProjectRepository $projectRepository,
-    //     DieFormater $projectFormater,
-    //     VerifyAuthentication $verifyAuthentication,
-    //     $id
-    // ): JsonResponse
-    // {
-    //     if (!(int)$id) {
-    //         return new JsonResponse(['errorMessage' => 'Project id not valid'], 400);
-    //     }
-
-    //     $user = $verifyAuthentication->verify($request);
-    //     if (!$user instanceof User) {
-    //         return new JsonResponse(['errorMessage' => 'User not connected'], 401);
-    //     }
-
-    //     $project = $projectRepository->findOneBy(['id' => (int)$id, 'owner' => $user]);
-    //     if (!$project) {
-    //         return new JsonResponse([], 404);
-    //     }
-
-    //     $data = $projectFormater->formatOneProject($project);
-    //     return new JsonResponse($data);
-    // }
-
     #[Route('/api/project/add', name: 'app_project_add', methods: ['POST'])]
     public function addProject(
         Request $request,
