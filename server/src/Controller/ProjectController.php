@@ -3,11 +3,12 @@
 namespace App\Controller;
 
 use App\Entity\Project;
+use App\Entity\User;
 use App\Repository\ProjectRepository;
 use App\Repository\UserRepository;
-use App\Service\DecodeJwt;
-use App\Service\ProjectFormater;
+use App\Service\DieFormater;
 use App\Service\ValidateField as ServiceValidateField;
+use App\Service\VerifyAuthentication;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -18,59 +19,47 @@ class ProjectController extends AbstractController
 {
     #[Route('/api/project/all', name: 'app_project_all', methods: ['GET'])]
     public function getAllProject(
-        ProjectRepository $projectRepository,
         Request $request,
-        DecodeJwt $decodeJwt,
-        UserRepository $userRepository,
-        ProjectFormater $projectFormater
+        ProjectRepository $projectRepository,
+        VerifyAuthentication $verifyAuthentification,
+        DieFormater $projectFormater
     ): JsonResponse
     {
-        $token = $request->headers->get('X-Authorization');
-        $userId = $decodeJwt->getIdToken($token);
-        if (!$userId) {
-            return new JsonResponse(['errorMessage' => 'User not connected'], 401);
-        }
-        $user = $userRepository->find($userId);
-        if(!$user) {
+        $user = $verifyAuthentification->verify($request);
+        if (!$user instanceof User) {
             return new JsonResponse(['errorMessage' => 'User not connected'], 401);
         }
 
         $projects = $projectRepository->findBy(['owner' => $user]);
 
-        $data = $projectFormater->formatAll($projects);
+        $data = $projectFormater->formatAllProjects($projects);
         return new JsonResponse($data, 200);
     }
 
-    #[Route('api/project/{id}', name: 'app_project_one', methods: ['GET'])]
+    #[Route('api/project/{id}', name: 'app_project_one', methods: ['GET'], requirements: ['id' => '\d+'])]
     public function getOneProject(
         Request $request,
         ProjectRepository $projectRepository,
-        UserRepository $userRepository,
-        ProjectFormater $projectFormater,
-        DecodeJwt $decodeJwt,
+        DieFormater $projectFormater,
+        VerifyAuthentication $verifyAuthentication,
         $id
     ): JsonResponse
     {
         if (!(int)$id) {
-            return new JsonResponse(['errorMessage' => 'Id not valid'], 400);
+            return new JsonResponse(['errorMessage' => 'Project id not valid'], 400);
         }
 
-        $token = $request->headers->get('X-Authorization');
-        $userId = $decodeJwt->getIdToken($token);
-        if (!$userId) {
-            return new JsonResponse(['errorMessage' => 'User not connected'], 401);
-        }
-        $user = $userRepository->find($userId);
-        if(!$user) {
-            return new JsonResponse(['errorMessage' => 'User not connected'], 401);
+        $user = $verifyAuthentication->verify($request);
+        if (!$user instanceof User) {
+            return new JsonResponse("User not connected", 401);
         }
 
         $project = $projectRepository->findOneBy(['id' => (int)$id, 'owner' => $user]);
         if (!$project) {
-            return new JsonResponse();
+            return new JsonResponse([], 404);
         }
 
-        $data = $projectFormater->formatOne($project);
+        $data = $projectFormater->formatOneProject($project);
         return new JsonResponse($data);
     }
 
@@ -80,16 +69,11 @@ class ProjectController extends AbstractController
         ObjectManager $objectManager,
         ServiceValidateField $validateField,
         UserRepository $userRepository,
-        DecodeJwt $decodeJwt,
+        VerifyAuthentication $verifyAuthentication
     ): JsonResponse
     {
-        $token = $request->headers->get('X-Authorization');
-        $userId = $decodeJwt->getIdToken($token);
-        if (!$userId) {
-            return new JsonResponse(['errorMessage' => 'User not connected'], 401);
-        }
-        $user = $userRepository->find($userId);
-        if(!$user) {
+        $user = $verifyAuthentication->verify($request);
+        if(!$user instanceof User) {
             return new JsonResponse(['errorMessage' => 'User not connected'], 401);
         }
 
@@ -121,6 +105,6 @@ class ProjectController extends AbstractController
         $objectManager->persist($project);
         $objectManager->flush();
         
-        return new JsonResponse($project->getId());
+        return new JsonResponse("Success");
     }
 }
