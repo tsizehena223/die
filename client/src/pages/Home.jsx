@@ -6,7 +6,7 @@ const Home = () => {
     const hasToken = localStorage.getItem('dieToken') ? true : false;
 
     const handleNavigate = () => {
-        navigate(hasToken ? '/project' : '/login');
+        navigate(hasToken ? '/dashboard' : '/login');
     }
 
     return (

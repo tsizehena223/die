@@ -5,6 +5,7 @@ import notask from "../assets/notask.svg";
 import { useAuth } from '../context/AuthContext';
 import AddProjectForm from "./AddProjectForm";
 import Team from "./Team";
+import { Link } from "react-router-dom";
 
 const Projects = ({ activePage, activeFilter }) => {
   const colors = ["bg-green-500", "bg-blue-500", "bg-red-500"];
@@ -83,9 +84,9 @@ const Projects = ({ activePage, activeFilter }) => {
                   <h1 className="-mt-4 text-white text-xl font-medium lg:px-4">{item.title}</h1>
                   <p className="text-sm text-gray-300 font-medium">Deadline : {item.deadline}</p>
                   <p className="text-gray-400 my-6">{description(item.description)}</p>
-                  <button type="button" className="mx-auto w-48 mt-auto mb-4 text-cyan-400 hover:text-black border border-cyan-400 hover:bg-cyan-400 focus:ring-4 focus:outline-none focus:ring-cyan-400 font-medium rounded-lg text-sm py-2.5">
+                  <Link to={`/project/${item.id}`} type="button" className="mx-auto w-48 mt-auto mb-4 text-cyan-400 hover:text-black border border-cyan-400 hover:bg-cyan-400 focus:ring-4 focus:outline-none focus:ring-cyan-400 font-medium rounded-lg text-sm py-2.5">
                     View tasks
-                  </button>
+                  </Link>
                 </div>
               )
             })}

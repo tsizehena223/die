@@ -31,7 +31,7 @@ const Login = () => {
           login(data.token);
           localStorage.setItem("dieToken", data.token);
           localStorage.setItem("userData", JSON.stringify(data.userData));
-          navigate("/project");
+          navigate("/dashboard");
           toast.success('Connected successfully');
         } 
       }
