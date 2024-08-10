@@ -11,13 +11,13 @@ const AddTaskForm = ({projectId}) => {
   const [title, setTitle] = useState('');
   const [status, setStatus] = useState('');
   const [deadline, setDeadline] = useState('');
-  const [project, setProject] = useState('');
+  const project = projectId;
   const [assignTo, setAssignTo] = useState('');
   const [loading, setLoading] = useState(false);
   const { token } = useAuth();
   const navigate = useNavigate();
   const [users, setUsers] = useState([]);
-  const [currentUser, setCurrentUser] = useState(JSON.parse(localStorage.getItem('userData')));
+  const currentUser = JSON.parse(localStorage.getItem('userData'));
 
   const handleButtonClick = () => {
     setIsModalVisible(true);
@@ -28,7 +28,6 @@ const AddTaskForm = ({projectId}) => {
   };
 
   useEffect(() => {
-    setCurrentUser(currentUser.id);
     const getUsers = async () => {
       setLoading(true);
       if (!token) return;
@@ -56,10 +55,8 @@ const AddTaskForm = ({projectId}) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    console.log(project)
     if (!token) return;
     try {
-      setProject(projectId);
       const response = await fetch(baseUrlApi + "/task/add", {
         method: 'POST',
         headers: {"Content-Type": 'application/json', 'X-Authorization': `Bearer ${token}`},
@@ -70,7 +67,7 @@ const AddTaskForm = ({projectId}) => {
         setError(data.errorMessage ?? 'An error has occured');
         toast.error(error);
       } else {
-        toast.success('Project add successfully');
+        toast.success('Task add successfully');
         navigate(0);
       }
     } catch (error) {
@@ -84,7 +81,7 @@ const AddTaskForm = ({projectId}) => {
   return (
     <>
       <button 
-        className="flex items-center px-4 py-2 border-white mt-6 bg-gray-700 border rounded-xl"
+        className="flex items-center px-4 py-2 border-gray-500 mt-6 bg-gray-800 border rounded-xl"
         onClick={handleButtonClick}
       >
         <i className="hidden sm:flex fa fa-plus bg-gray-900 rounded-2xl size-8 items-center justify-center"></i>
@@ -134,7 +131,7 @@ const AddTaskForm = ({projectId}) => {
                       <option value="" disabled>Select ...</option>
                       {users.map((user) => (
                         <option key={user.id} value={user.id}>
-                          {(user.id === currentUser) ? 'Me' : user.email}
+                          {(currentUser?.id &&user.id === currentUser.id) ? 'Me' : user.email}
                         </option>
                       ))}
                     </select>

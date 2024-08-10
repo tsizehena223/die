@@ -31,7 +31,6 @@ const OneProject = () => {
       })
 
       const data = await response.json();
-      console.log(data);
       if (!response.ok || data.errorMessage) {
         toast.error(data.errorMessage);
       } else if (data.successMessage) {
@@ -97,7 +96,7 @@ const OneProject = () => {
             <p><i className="fa fa-circle text-red-500"></i>&nbsp;&nbsp; to do</p>
             <p><i className="fa fa-circle text-gray-200"></i>&nbsp;&nbsp; in progress</p>
           </div>
-          
+           
           <div className="w-full relative overflow-x-auto shadow-md sm:rounded-lg">
             <table className="w-full text-sm text-left rtl:text-right text-gray-500">
               <thead className="text-xs uppercase border border-gray-700 bg-gray-800 text-gray-400">
@@ -139,6 +138,8 @@ const OneProject = () => {
               </tbody>
             </table>
           </div>
+
+          <AddTaskForm projectId={id} />
         </div>
       )}
     </>
