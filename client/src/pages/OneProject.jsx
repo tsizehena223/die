@@ -7,7 +7,7 @@ import { baseUrlApi } from "../config/api";
 import Loading from "../components/Loading";
 import Navbar from "../components/Navbar";
 import notask from "../assets/notask.svg";
-import AddTaskForm from "../components/AddTaskForm";
+import LeftSideBarTask from "../components/LeftSideBarTask";
 
 const OneProject = () => {
   const navigate = useNavigate();
@@ -19,6 +19,7 @@ const OneProject = () => {
   const [tasks, setTasks] = useState([]);
   const user = localStorage.getItem('userData');
   const [activePage, setActivePage] = useState(0);
+  const [activeFilter, setActiveFilter] = useState(null);
 
   const handleStatusChange = async (index, newStatus, taskId) => {
     setLoading(true);
@@ -47,6 +48,10 @@ const OneProject = () => {
       setLoading(false);
     }
   };
+
+
+  const arrayStatus = ['done', 'in progress', 'to do'];
+  const tasksByFilter = (activeFilter || activeFilter === 0) ? tasks.filter(item => item.status === arrayStatus[activeFilter]) : tasks;
 
   useEffect(() => {
     const getTasks = async () => {
@@ -78,18 +83,19 @@ const OneProject = () => {
   return (
     <>
       <Navbar user={user} activePage={activePage} setActivePage={setActivePage} showMenu={false} />
+      <LeftSideBarTask activeFilter={activeFilter} setActiveFilter={setActiveFilter} projectId={id} />
+
       {loading ? (
         <Loading />
       ) : (!tasks || !isIdValid) ? (
         <NotFound />
       ) : (tasks.length < 1) ? (
-        <div className="mx-20 pt-20 text-white h-screen flex flex-col items-center justify-center">
+        <div className="pl-0 md:pl-44 pt-20 text-white h-screen flex flex-col items-center justify-center">
           <p className="text-gray-400">No task yet</p>
           <img src={notask} alt="" className="h-40 my-4" />
-          <AddTaskForm projectId={id} />
         </div>
       ) : (
-        <div className="flex flex-col items-center my-20 mx-2 sm:mx-10 md:mx-20 text-gray-300">
+        <div className="pl-0 md:pl-44 flex flex-col items-center my-20 mx-2 sm:mx-10 md:mx-20 text-gray-300">
           <h2 className="text-2xl pt-10">My tasks [<code className="text-red-500">{tasks[0].project}</code>]</h2>
           <div className="my-4 text-gray-400 text-sm border px-8 py-2 rounded-lg border-gray-500">
             <p><i className="fa fa-circle text-green-500"></i>&nbsp;&nbsp; done</p>
@@ -109,7 +115,7 @@ const OneProject = () => {
                 </tr>
               </thead>
               <tbody>
-                {tasks.map((task, index) => {
+                {tasksByFilter.map((task, index) => {
                   return (
                     <tr key={index} className="border bg-gray-900 border-gray-700">
                       <th scope="row"className="pl-3 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
@@ -138,8 +144,6 @@ const OneProject = () => {
               </tbody>
             </table>
           </div>
-
-          <AddTaskForm projectId={id} />
         </div>
       )}
     </>

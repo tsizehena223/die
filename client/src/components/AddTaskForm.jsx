@@ -81,11 +81,10 @@ const AddTaskForm = ({projectId}) => {
   return (
     <>
       <button 
-        className="flex items-center px-4 py-2 border-gray-500 mt-6 bg-gray-800 border rounded-xl"
+        className="fixed space-x-2 flex bottom-4 left-2 items-center px-2 py-2 border-gray-500 mt-6 bg-gray-800 border rounded-full"
         onClick={handleButtonClick}
       >
-        <i className="hidden sm:flex fa fa-plus bg-gray-900 rounded-2xl size-8 items-center justify-center"></i>
-        <p className="ml-2 text-center">Add new task</p>
+        <i className="flex fa fa-plus bg-gray-900 rounded-2xl size-8 items-center justify-center"></i>
       </button>
       {loading ? (
         <Loading />
