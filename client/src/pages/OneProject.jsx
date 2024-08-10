@@ -20,12 +20,6 @@ const OneProject = () => {
   const [activePage, setActivePage] = useState(0);
 
   const handleStatusChange = async (index, newStatus, taskId) => {
-    setTasks(prevTasks =>
-      prevTasks.map((task, i) =>
-        i === index ? { ...task, status: newStatus } : task
-      )
-    );
-
     setLoading(true);
 
     try {
@@ -36,10 +30,16 @@ const OneProject = () => {
       })
 
       const data = await response.json();
+      console.log(data);
       if (!response.ok || data.errorMessage) {
         toast.error(data.errorMessage);
-      } else {
-        toast.success('Status updated successfully');
+      } else if (data.successMessage) {
+        setTasks(prevTasks =>
+          prevTasks.map((task, i) =>
+            i === index ? { ...task, status: newStatus } : task
+          )
+        );
+        toast.success(data.successMessage);
       }
     } catch (e) {
       toast.error('An error has occured');
