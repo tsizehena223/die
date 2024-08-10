@@ -49,6 +49,38 @@ class TaskController extends AbstractController
         return new JsonResponse($data);
     }
 
+    #[Route('/api/task/update/status', name: 'update_status_task', methods: ['POST'])]
+    public function updateTaskStatus(
+        TaskRepository $taskRepository,
+        Request $request,
+        VerifyAuthentication $verifyAuthentication,
+        ObjectManager $objectManager
+    ): JsonResponse
+    {
+        if (!$verifyAuthentication->verify($request)) {
+            return new JsonResponse(['errorMessage' => 'User not connected'], 401);
+        }
+
+        $data = json_decode($request->getContent(), true);
+
+        $taskId = $data['taskId'];
+        $newStatus = $data['newStatus'];
+        if (!$newStatus || !$taskId) {
+            return new JsonResponse(['errorMessage' => 'No status or id found'], 400);
+        }
+
+        $task = $taskRepository->find($taskId);
+        if (!$task instanceof Task) {
+            return new JsonResponse(['errorMessage' => 'No task found'], 400);
+        }
+        
+        $task->setStatus($newStatus);
+        $objectManager->persist($task);
+        $objectManager->flush();
+
+        return new JsonResponse(['successMessage' => 'Updated successfully']);
+    }
+
     #[Route('/api/task/add', name: 'add_task', methods: ['POST'])]
     public function addTask(
         Request $request,

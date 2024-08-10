@@ -19,12 +19,33 @@ const OneProject = () => {
   const user = localStorage.getItem('userData');
   const [activePage, setActivePage] = useState(0);
 
-  const handleStatusChange = (index, newStatus) => {
+  const handleStatusChange = async (index, newStatus, taskId) => {
     setTasks(prevTasks =>
       prevTasks.map((task, i) =>
         i === index ? { ...task, status: newStatus } : task
       )
     );
+
+    setLoading(true);
+
+    try {
+      const response  = await fetch(baseUrlApi + '/task/update/status', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json', 'X-Authorization': `Bearer ${token}`},
+        body: JSON.stringify({taskId, newStatus}),
+      })
+
+      const data = await response.json();
+      if (!response.ok || data.errorMessage) {
+        toast.error(data.errorMessage);
+      } else {
+        toast.success('Status updated successfully');
+      }
+    } catch (e) {
+      toast.error('An error has occured');
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -99,15 +120,15 @@ const OneProject = () => {
                       <td className="pl-2">{task.deadline}</td>
                       <td className="pl-2 flex items-center justify-start py-8">
                         <i 
-                          onClick={() => handleStatusChange(index, 'done')}
+                          onClick={() => handleStatusChange(index, 'done', task.id)}
                           className={`pr-1 fa fa-circle text-green-500 hover:cursor-pointer ${task.status === 'done' ? 'fa-xl' : 'fa-sm'}`}
                         ></i>
                         <i 
-                          onClick={() => handleStatusChange(index, 'to do')}
+                          onClick={() => handleStatusChange(index, 'to do', task.id)}
                           className={`pr-1 fa fa-circle text-red-500 hover:cursor-pointer ${task.status === 'to do' ? 'fa-xl' : 'fa-sm'}`}
                         ></i>
                         <i 
-                          onClick={() => handleStatusChange(index, 'in progress')}
+                          onClick={() => handleStatusChange(index, 'in progress', task.id)}
                           className={`pr-1 fa fa-circle text-gray-200 hover:cursor-pointer ${task.status === 'in progress' ? 'fa-xl' : 'fa-sm'}`}
                         ></i>
                       </td>
