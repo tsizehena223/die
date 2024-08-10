@@ -136,7 +136,6 @@ class UserController extends AbstractController
 
         $data = [];
         foreach ($users as $user) {
-            if ($user === $currentUser) continue;
             $data[] = [
                 "id" => $user->getId(),
                 "email" => $user->getEmail(),

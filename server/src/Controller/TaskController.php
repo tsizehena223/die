@@ -99,15 +99,16 @@ class TaskController extends AbstractController
         $data = json_decode($request->getContent(), true);
         if (
             !$validateField->isFieldValid($data, 'title') || 
-            !$validateField->isFieldValid($data, 'assignedTo') || 
+            !$validateField->isFieldValid($data, 'assignTo') || 
             !$validateField->isFieldValid($data, 'project') ||
-            !$validateField->isFieldValid($data, 'deadline')
+            !$validateField->isFieldValid($data, 'deadline') ||
+            !$validateField->isFieldValid($data, 'status')
         ) {
-            return new JsonResponse(['errorMessage' => 'title, assignedTo, deadline and project are required'], 400);
+            return new JsonResponse(['errorMessage' => 'title, assignTo, deadline, status and project are required'], 400);
         }
 
         $deadline = new \DateTime(($data['deadline']));
-        $assignedTo = $userRepository->find($data['assignedTo']);
+        $assignedTo = $userRepository->find($data['assignTo']);
         if (!$assignedTo instanceof User) {
             return new JsonResponse(['errorMessage' => 'Invalid user to assign'], 400);
         }
@@ -120,6 +121,7 @@ class TaskController extends AbstractController
         $task->setTitle($data['title'])
             ->setAssignedTo($assignedTo)
             ->setDeadline($deadline)
+            ->setStatus($data['status'])
             ->setProject($formProject);
 
         $objectManager->persist($task);
