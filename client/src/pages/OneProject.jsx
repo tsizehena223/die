@@ -115,7 +115,11 @@ const OneProject = () => {
                 </tr>
               </thead>
               <tbody>
-                {tasksByFilter.map((task, index) => {
+                {tasksByFilter.length === 0 ? (
+                  <div className="fixed top-1/2 left-1/2 text-white">
+                    Nothing in [{arrayStatus[activeFilter]}]
+                  </div>
+                ) : tasksByFilter.map((task, index) => {
                   return (
                     <tr key={index} className="border bg-gray-900 border-gray-700">
                       <th scope="row"className="pl-3 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
