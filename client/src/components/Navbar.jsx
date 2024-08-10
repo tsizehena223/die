@@ -1,10 +1,10 @@
 import { useState } from "react";
 import logo from "../assets/logo.svg";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useAuth } from "../context/AuthContext";
 
-const Navbar = ({user, activePage, setActivePage}) => {
+const Navbar = ({user, activePage, setActivePage, showMenu}) => {
   const [isMenuActive, setIsMenuActive] = useState(false);
   const navigate = useNavigate();
   const currentUser = JSON.parse(user);
@@ -41,13 +41,13 @@ const Navbar = ({user, activePage, setActivePage}) => {
         <div className="relative flex h-16 items-center justify-between">
           <button onClick={toggleShowMenu} className="absolute ml-2 flex items-center sm:hidden">
             <i id="menu-bar" className={`fa fa-bars${!isMenuActive ? '-staggered' : ''} fa-xl text-cyan-400`}></i>
-            <p className="ml-4 text-gray-200 text-2xl">die</p>
+            <Link to="/dashboard" className="ml-4 text-gray-200 text-2xl">die</Link>
           </button>
           <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
-            <div className="items-center hidden sm:flex">
+            <Link to="/dashboard" className="items-center hidden sm:flex">
               <img className="size-12 rounded-full" src={logo} alt=""/>
-            </div>
-            <div className="hidden sm:ml-8 sm:flex items-center">
+            </Link>
+            <div className={`hidden sm:ml-8 sm:flex items-center sm:${!showMenu && 'hidden'}`}>
               <ul className="flex space-x-4 text-sm font-medium text-gray-200">
                 {menuItems.map((item, index) => {
                   return (
@@ -75,7 +75,7 @@ const Navbar = ({user, activePage, setActivePage}) => {
         </div>
       </div>
 
-      <div className={`${isMenuActive ? 'block' : 'hidden'}`} id="mobile-menu">
+      <div className={`${isMenuActive ? 'block' : 'hidden'} ${!showMenu && 'hidden'}`} id="mobile-menu">
         <ul className="space-y-2 px-4 pb-3 pt-2 text-sm font-medium text-gray-200">
           {menuItems.map((item, index) => {
             return (

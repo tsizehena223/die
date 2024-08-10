@@ -6,6 +6,7 @@ import { useAuth } from '../context/AuthContext';
 import AddProjectForm from "./AddProjectForm";
 import Team from "./Team";
 import { Link } from "react-router-dom";
+import Loading from "./Loading";
 
 const Projects = ({ activePage, activeFilter }) => {
   const colors = ["bg-green-500", "bg-blue-500", "bg-red-500"];
@@ -54,10 +55,7 @@ const Projects = ({ activePage, activeFilter }) => {
   return (
     <>
       {loading ? (
-        <div className="h-screen flex flex-col justify-center items-center text-white absolute left-1/2 transform -translate-x-1/2">
-          <i className="fa fa-spinner animate-spin fa-2xl mb-4"></i>
-          <p className="text-sm mt-2">Wait just a sec...</p>
-        </div>
+        <Loading />
       ) : (activePage === 1) ? (
         <Team />
       ) : (projects.length === 0 || activePage === 2) ? (

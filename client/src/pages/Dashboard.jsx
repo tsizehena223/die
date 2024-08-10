@@ -21,7 +21,7 @@ const Dashboard = () => {
 
   return (
       <>
-        <Navbar user={user} activePage={activePage} setActivePage={setActivePage} />
+        <Navbar user={user} activePage={activePage} setActivePage={setActivePage} showMenu={true} />
         <LeftSideBar activeFilter={activeFilter} setActiveFilter={setActiveFilter} />
         <Projects activePage={activePage} activeFilter={activeFilter} />
       </>

@@ -3,6 +3,7 @@ import { toast } from 'react-toastify';
 import { baseUrlApi } from '../config/api';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import Loading from './Loading';
 
 const AddProjectForm = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -91,10 +92,7 @@ const AddProjectForm = () => {
         <p className="ml-2 text-center">Add new project</p>
       </button>
       {loading ? (
-        <div className="h-screen z-50 flex flex-col justify-center items-center text-blue-500 absolute left-1/2 transform -translate-x-1/2">
-          <i className="fa fa-spinner animate-spin fa-2xl mb-4"></i>
-          <p className="text-sm mt-2">Creating new project...</p>
-        </div>
+        <Loading />
       ) : (
         isModalVisible && (
           <div className="absolute mt-16 w-96 flex items-center justify-center bg-gray-900 bg-opacity-50 backdrop-blur-sm z-50">
@@ -133,7 +131,7 @@ const AddProjectForm = () => {
                   </div>
                   <div className="col-span-2">
                     <label htmlFor="participants" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Participants</label>
-                    <select id="participants" style={{ height: '4rem'}} value={participants} onChange={handleChangeParticipants} multiple className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" required>
+                    <select id="participants" style={{ height: '4rem'}} value={participants} onChange={handleChangeParticipants} multiple className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
                       {users.map((user) => (
                         <option key={user.id} value={user.id}>
                           {user.email}

@@ -44,10 +44,6 @@ class TaskController extends AbstractController
 
         $tasks = $taskRepository->findBy(['project' => $project]);
 
-        if (!$tasks) {
-            return new JsonResponse('No task for this project');
-        }
-
         $data = $taskFormater->formatTasks($tasks);
 
         return new JsonResponse($data);
